@@ -1,5 +1,24 @@
 import React, { useState, useCallback } from 'react'
 
+const getGtmScript = (id) =>
+  `
+    (function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
+      new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
+      j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
+      'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
+    })(window,document,'script','dataLayer','${id}');
+  `;
+
+export const injectGtmLibrary = () => {
+  const scriptContents = getGtmScript('GTM-ZZZZZZ');
+  const scriptElement = document.createElement('script');
+  scriptElement.innerHTML = scriptContents;
+  const targetElement = document.getElementById('gtm-scripts');
+  if (targetElement) {
+    targetElement.after(scriptElement);
+  }
+};
+
 export const LoginForm = () => {
   // Store the username so we can reference it in a submit handler
   const [username, setUsername] = useState('')
@@ -7,6 +26,10 @@ export const LoginForm = () => {
   // Create a state for the user data we are going to receive
   // from the API call upon form submit.
   const [userData, setUserData] = useState(null)
+
+  React.useEffect(() => {
+    injectGtmLibrary();
+  }, []);
 
   // Whenever we change our username input's value
   // update the corresponding state's value.
